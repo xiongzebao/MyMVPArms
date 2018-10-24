@@ -1,0 +1,1 @@
+include ':demo', ':arms', ':arms-autolayout', ':arms-imageloader-glide', ':module_main', ':module_photo', ':module_videos', ':module_video', ':module_text', ':commonlibrary', ':standarduilibrary'
