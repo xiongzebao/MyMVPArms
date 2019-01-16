@@ -27,6 +27,7 @@ import org.json.JSONException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
+import io.reactivex.exceptions.CompositeException;
 import me.jessyan.rxerrorhandler.handler.listener.ResponseErrorListener;
 import retrofit2.HttpException;
 import timber.log.Timber;
@@ -44,9 +45,27 @@ public class ResponseErrorListenerImpl implements ResponseErrorListener {
 
     @Override
     public void handleResponseError(Context context, Throwable t) {
-        Timber.tag("Catch-Error").w(t.getMessage());
+
+
         //这里不光只能打印错误, 还可以根据不同的错误做出不同的逻辑处理
         //这里只是对几个常用错误进行简单的处理, 展示这个类的用法, 在实际开发中请您自行对更多错误进行更严谨的处理
+
+         if(t instanceof CompositeException){
+             StringBuilder sb = new StringBuilder();
+             CompositeException exception = (CompositeException) t;
+             for (int i=0;i<exception.getExceptions().size();i++){
+                 Throwable throwable = exception.getExceptions().get(i);
+                 String msg = getExceptionMessage(throwable);
+                 sb.append(msg+"    ");
+                 Timber.tag("Catch-Error").e(throwable.getMessage());
+             }
+             ArmsUtils.snackbarTextWithLong(sb.toString());
+             return;
+         }
+         ArmsUtils.snackbarTextWithLong(getExceptionMessage(t));
+    }
+
+    private String getExceptionMessage(Throwable t){
         String msg = "未知错误";
         if (t instanceof UnknownHostException) {
             msg = "网络不可用";
@@ -58,8 +77,10 @@ public class ResponseErrorListenerImpl implements ResponseErrorListener {
         } else if (t instanceof JsonParseException || t instanceof ParseException || t instanceof JSONException || t instanceof JsonIOException) {
             msg = "数据解析错误";
         }
-        ArmsUtils.snackbarText(msg);
+        return msg;
     }
+
+
 
     private String convertStatusCode(HttpException httpException) {
         String msg;

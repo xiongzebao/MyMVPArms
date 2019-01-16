@@ -21,6 +21,7 @@ import android.arch.lifecycle.OnLifecycleEvent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.SupportActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import com.jess.arms.di.scope.ActivityScope;
 import com.jess.arms.integration.AppManager;
@@ -136,6 +137,7 @@ public class UserPresenter extends BasePresenter<UserContract.Model, UserContrac
                 .subscribe(new ErrorHandleSubscriber<List<User>>(mErrorHandler) {
                     @Override
                     public void onNext(List<User> users) {
+                        Log.e("xiong",users.size()+"--");
                         lastUserId = users.get(users.size() - 1).getId();//记录最后一个id,用于下一次请求
                         if (pullToRefresh) mUsers.clear();//如果是下拉刷新则清空列表
                         preEndIndex = mUsers.size();//更新之前列表总长度,用于确定加载更多的起始位置

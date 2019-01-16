@@ -7,6 +7,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
+
 kapt {
     arguments {
         arg("moduleName", project.getName())
@@ -20,7 +21,9 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
         sourceCompatibility JavaVersion.VERSION_1_8
     }
-
+    kapt {
+        generateStubs = true
+    }
 
     defaultConfig {
 
@@ -65,8 +68,11 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    annotationProcessor  'com.alibaba:arouter-compiler:1.1.4'
-
+   // annotationProcessor  'com.alibaba:arouter-compiler:1.1.4'
+    kapt (rootProject.ext.dependencies["butterknife-compiler"]) {
+        exclude module: 'support-annotations'
+    }
+    kapt rootProject.ext.dependencies["dagger2-compiler"]
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
